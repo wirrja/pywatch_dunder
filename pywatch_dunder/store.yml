@@ -1,0 +1,28 @@
+home:
+  folder:
+    - /home/wirr/
+  file:
+    - .inputrc
+    - .bashrc
+    - .bash_history
+
+vim:
+  folder:
+  - /home/wirr/.vim/
+  file:
+  - ALL
+
+#vscode:
+#  folder:
+#  - /home/wirr/.vscode/
+#  file:
+#  - ALL
+
+postgresql:
+  folder:
+  - /etc/postgresql/10/main/
+  file:
+  - ALL
+
+#trololo:
+#  folder:

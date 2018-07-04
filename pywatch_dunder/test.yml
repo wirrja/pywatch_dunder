@@ -1,0 +1,7 @@
+home:
+  folder:
+    - /home/wirr/
+  file:
+    - .inputrc
+    - .bashrc
+    - .bash_history
