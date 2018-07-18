@@ -1,11 +1,10 @@
 #!/usr/bin/env python
+
 import unittest
-from pywatch_dunder.pd_config import YAMLReader, YAMLParser, UnknownFileFormat
+from pwdr import YAMLReader, YAMLParser, UnknownFileFormat
 
 
 class TestYAMLReader(unittest.TestCase):
-    def setUp(self):
-        self.func = YAMLReader()
 
     def test_config_not_found(self):
         with self.assertRaises(FileNotFoundError):
@@ -28,8 +27,6 @@ class TestYAMLReader(unittest.TestCase):
 
 
 class TestYAMLParser(unittest.TestCase):
-    def setUp(self):
-        pass
 
     def test_config_not_found(self):
         with self.assertRaises(FileNotFoundError):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import shutil
-from pywatch_dunder import YAMLParser, BACKUP_DIR
+from pwdr import YAMLParser, BACKUP_DIR
 
 def backup(path):
     os.makedirs(
@@ -15,4 +15,8 @@ def backup(path):
 if __name__ == "__main__":
     parser = YAMLParser().parse_storeyml()
     for path in parser:
-        backup(path)
+        if os.path.exists(path):
+            backup(path)
+        else:
+            print(path, "not Found!")
+
