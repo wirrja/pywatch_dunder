@@ -1,64 +1,50 @@
 #!/usr/bin/env python
 
 import unittest
-from pwdr import YAMLReader, YAMLParser, UnknownFileFormat
+from pwdr import YAMLReader, UnknownFileFormat, YAML_CONF_DIR
+import os.path
 
 
 class TestYAMLReader(unittest.TestCase):
 
     def test_config_not_found(self):
         with self.assertRaises(FileNotFoundError):
-            YAMLReader(storeyml="blabla.yml").read()
+            YAMLReader(ymlfile="blabla.yml")._yml_loader()
 
     def test_config_not_yaml(self):
         with self.assertRaises(UnknownFileFormat):
-            YAMLReader(storeyml="incorrect.yml").read()
+            YAMLReader(ymlfile="incorrect.yml")._yml_loader()
 
     def test_config_is_ok(self):
+        real_result = str()
+        # monkeypatching, need $HOME var in yml file
+        test_result = os.path.join("./SETTINGS", "test.yml")
+        for n in YAMLReader(ymlfile="test.yml").parse_yml():
+            real_result = n
+
         self.assertEqual(
-            YAMLReader(storeyml="test.yml").read(),
-            {
-                "home": {
-                    "file": [".inputrc", ".bashrc", ".bash_history"],
-                    "folder": ["/home/wirr/"],
-                }
-            },
-        )
+            real_result, test_result)
 
 
-class TestYAMLParser(unittest.TestCase):
+    def test_parse_ymlfile_one_config(self):
+        test_result = os.path.join(YAML_CONF_DIR, "test.yml")
+        real_result = str()
+        for n in YAMLReader._one_config(test_result):
+            real_result = n
 
-    def test_config_not_found(self):
-        with self.assertRaises(FileNotFoundError):
-            YAMLParser(storeyml="blabla.yml`").read()
+        self.assertEqual(test_result, real_result)
 
-    def test_config_not_yaml(self):
-        with self.assertRaises(UnknownFileFormat):
-            YAMLParser(storeyml="incorrect.yml").read()
-
-    def test_config_is_ok(self):
-        self.assertEqual(
-            YAMLParser(storeyml="test.yml").read(),
-            {
-                "home": {
-                    "file": [".inputrc", ".bashrc", ".bash_history"],
-                    "folder": ["/home/wirr/"],
-                }
-            },
-        )
-
-    def test_parse_storeyml(self):
+    def test_parse_ymlfile_all_configs(self):
         test_folder_results = [
-            "/etc/postgresql/10/main/pg_ident.conf",
-            "/etc/postgresql/10/main/pg_hba.conf",
-            "etc/postgresql/10/main/postgresql.conf",
-            "/etc/postgresql/10/main/start.conf",
-            "/etc/postgresql/10/main/pg_ctl.conf",
-            "/etc/postgresql/10/main/environment",
+            os.path.join(YAML_CONF_DIR, "incorrect.yml"),
+            os.path.join(YAML_CONF_DIR, "store.yml"),
+            os.path.join(YAML_CONF_DIR, "test.yml"),
         ]
-        for n in YAMLParser._all_configs("/etc/postgresq/10/main/"):
-            for y in test_folder_results:
-                self.assertEqual(n, y)
+        real_folder_results = []
+
+        for n in YAMLReader._all_configs(YAML_CONF_DIR):
+            real_folder_results.append(n)
+        self.assertEqual(test_folder_results, sorted(real_folder_results))
 
 
 if __name__ == "__main__":

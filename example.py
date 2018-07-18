@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import shutil
-from pwdr import YAMLParser, BACKUP_DIR
+from pwdr import YAMLReader, BACKUP_DIR
 
 def backup(path):
     os.makedirs(
@@ -13,10 +13,6 @@ def backup(path):
 
 
 if __name__ == "__main__":
-    parser = YAMLParser().parse_storeyml()
+    parser = YAMLReader().parse_yml()
     for path in parser:
-        if os.path.exists(path):
-            backup(path)
-        else:
-            print(path, "not Found!")
-
+        backup(path)

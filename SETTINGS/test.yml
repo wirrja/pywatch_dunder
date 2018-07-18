@@ -1,0 +1,5 @@
+test:
+  folder:
+    - ./SETTINGS
+  file:
+    - test.yml
