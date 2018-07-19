@@ -1,23 +1,27 @@
 from datetime import datetime
 import logging
 import os
+import shutil
 import yaml
 from yaml.scanner import ScannerError
 
 
-YAML_CONF_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "SETTINGS")
+YAML_CONF_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "SETTINGS"
+)
 BACKUP_DIR = os.path.join(os.path.dirname(YAML_CONF_DIR), "backup")
-BACKUP_TEMP_DIR = os.path.join(os.path.dirname(YAML_CONF_DIR), "temp")
 LOGDIR = os.path.join(os.path.dirname(YAML_CONF_DIR), "logs")
-LOGFILE = os.path.join(LOGDIR, "{}".format(datetime.strftime(datetime.now(), "%Y-%m-%d.log")))
+LOGFILE = os.path.join(
+    LOGDIR, "{}".format(datetime.strftime(datetime.now(), "%Y-%m-%d.log"))
+)
 
 logging.basicConfig(
-        format='%(asctime)s %(message)s',
-        filename=LOGFILE,
-        filemode='w',
-        datefmt='%H:%M:%S',
-        level=logging.WARNING
-    )
+    format="%(asctime)s %(message)s",
+    filename=LOGFILE,
+    filemode="a",
+    datefmt="%H:%M:%S",
+    level=logging.WARNING,
+)
 
 
 class BaseError(Exception):
@@ -36,19 +40,6 @@ class UnknownFileFormat(BaseError):
 class YAMLReader:
     def __init__(self, ymlfile="store.yml"):
         self._ymlfile = ymlfile
-
-    def _yml_loader(self):
-        with open(os.path.join(YAML_CONF_DIR, self._ymlfile), "r") as y:
-            try:
-                config = yaml.load(y)
-                return config
-
-            except ScannerError:
-                raise UnknownFileFormat(
-                    file=os.path.join(
-                        os.path.dirname(os.path.abspath(__file__)), self._ymlfile
-                    )
-                )
 
     def parse_yml(self):
         yml_config = self._yml_loader()
@@ -70,13 +61,26 @@ class YAMLReader:
                     "Warning: Check {}! Some strings are empty.".format(self._ymlfile)
                 )
 
+    def _yml_loader(self):
+        with open(os.path.join(YAML_CONF_DIR, self._ymlfile), "r") as y:
+            try:
+                config = yaml.load(y)
+                return config
+
+            except ScannerError:
+                raise UnknownFileFormat(
+                    file=os.path.join(
+                        os.path.dirname(os.path.abspath(__file__)), self._ymlfile
+                    )
+                )
+
     @staticmethod
     def _one_config(file):
         if os.path.exists(file):
             logging.info("SUCCESS {}".format(file))
             yield file
         else:
-            logging.warning("FILE NOT FOUND {}" .format(file))
+            logging.warning("FILE NOT FOUND {}".format(file))
 
     @staticmethod
     def _all_configs(folder):
@@ -87,3 +91,25 @@ class YAMLReader:
                     yield os.path.join(root, filename)
         else:
             logging.warning("FOLDER NOT FOUND {}".format(folder))
+
+
+def _local_backup(path, backup_folder=BACKUP_DIR):
+    """
+    Copy file from path with all metadata and rights
+    to backup_folder
+    """
+    os.makedirs(
+        os.path.join(os.path.join(backup_folder + os.path.dirname(path))), exist_ok=True
+    )
+    shutil.copy2(
+        path, os.path.join(backup_folder + os.path.abspath(path)), follow_symlinks=True
+    )
+
+
+class PWDRBackup:
+    def __init__(self, path, backup_folder=BACKUP_DIR):
+        self.folder = backup_folder
+        self.path = path
+
+    def backup(self):
+        return _local_backup(self.path, self.folder)

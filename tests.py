@@ -6,7 +6,6 @@ import os.path
 
 
 class TestYAMLReader(unittest.TestCase):
-
     def test_config_not_found(self):
         with self.assertRaises(FileNotFoundError):
             YAMLReader(ymlfile="blabla.yml")._yml_loader()
@@ -22,9 +21,7 @@ class TestYAMLReader(unittest.TestCase):
         for n in YAMLReader(ymlfile="test.yml").parse_yml():
             real_result = n
 
-        self.assertEqual(
-            real_result, test_result)
-
+        self.assertEqual(real_result, test_result)
 
     def test_parse_ymlfile_one_config(self):
         test_result = os.path.join(YAML_CONF_DIR, "test.yml")
