@@ -3,3 +3,4 @@ test:
     - ./SETTINGS
   file:
     - test.yml
+

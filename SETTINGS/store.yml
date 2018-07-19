@@ -12,7 +12,7 @@ vim:
   file:
     - ALL
 
-#
+
 #postgresql:
 #  folder:
 #    - /etc/postgresql/10/main/

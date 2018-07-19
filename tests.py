@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
-from pwdr import YAMLReader, UnknownFileFormat, YAML_CONF_DIR
+from pwdr import YAMLReader, PWDRBackup, UnknownFileFormat, YAML_CONF_DIR, BACKUP_DIR
 import os.path
 
 
@@ -43,6 +43,15 @@ class TestYAMLReader(unittest.TestCase):
             real_folder_results.append(n)
         self.assertEqual(test_folder_results, sorted(real_folder_results))
 
+class TestPWDRBackup(unittest.TestCase):
+    def test_backup(self):
+        PWDRBackup(
+            os.path.join(
+                os.path.dirname(BACKUP_DIR), "pwdr/__init__.py"
+            )).backup()
+
+        test_state = os.path.isfile(os.path.join(BACKUP_DIR + os.path.dirname(BACKUP_DIR), 'pwdr/__init__.py'))
+        self.assertTrue(test_state)
 
 if __name__ == "__main__":
     unittest.main()
